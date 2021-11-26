@@ -8,6 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Windows.Forms.DataVisualization.Charting;
 
 namespace Costs.Forms
 {
@@ -22,7 +23,7 @@ namespace Costs.Forms
             dgvPurchases.AutoGenerateColumns = false;
             dgvShops.AutoGenerateColumns = false;
 
-            tscbFilter.SelectedIndex = 0;
+            tscbFilter.SelectedIndex = 1;
             tscbFilter.SelectedIndexChanged += TscbFilter_SelectedIndexChanged;
         }
 
@@ -62,6 +63,72 @@ namespace Costs.Forms
             float sum = 0;
             purchases.ForEach(p => sum += p.ActualCost);
             tsslSum.Text = "" + sum;
+
+            RefreshChart();
+        }
+
+        private void RefreshChart()
+        {
+            Dictionary<Item, TreeNode> nodes = new Dictionary<Item, TreeNode>();
+            Dictionary<Item, float> colorsCounts = new Dictionary<Item, float>();
+            if (tcMain.SelectedTab != tpItems || tvItems.SelectedNode == null || tvItems.SelectedNode.Text == ALL)
+            {
+                CostCollection.GetInstance().Items.FindAll(i => i.Parent == null).ForEach(i => colorsCounts.Add(i, 0));
+                foreach (TreeNode node in tvItems.Nodes)
+                    if (node.Tag != null && node.Tag is Item)
+                        nodes.Add(node.Tag as Item, node);
+            }
+            else
+                foreach (TreeNode childNode in tvItems.SelectedNode.Nodes)
+                {
+                    colorsCounts.Add(childNode.Tag as Item, 0);
+                    nodes.Add(childNode.Tag as Item, childNode);
+                }
+
+            foreach (DataGridViewRow row in dgvPurchases.Rows)
+            {
+                Purchase purchase = GetPurchaseFromRow(row);
+                if (colorsCounts.ContainsKey(purchase.Item))
+                    colorsCounts[purchase.Item] += purchase.ActualCost;
+                else
+                {
+                    Item item = purchase.Item.Parent;
+                    while (item != null && !colorsCounts.ContainsKey(item))
+                        item = item.Parent;
+                    if (item != null && colorsCounts.ContainsKey(item))
+                        colorsCounts[item] += purchase.ActualCost;
+                }
+            }
+            Random random = new Random();
+
+            Series series = chart.Series[0];
+            series.Points.Clear();
+            foreach (Item key in colorsCounts.Keys)
+            {
+                if (colorsCounts[key] == 0)
+                    continue;
+
+                int pointNum = series.Points.AddY(colorsCounts[key]);
+                DataPoint point = series.Points[pointNum];
+                point.Color = Color.FromArgb(random.Next(0, 256), random.Next(0, 256), random.Next(0, 256));
+                point.IsValueShownAsLabel = true;
+                point.ToolTip = colorsCounts[key].ToString();
+                point.Label = key.Name.ToString();
+                try
+                {
+                    point.Tag = nodes[key];
+                }
+                catch { }
+            }
+        }
+
+        private void chart_Click(object sender, EventArgs e)
+        {
+            Point pos = System.Windows.Forms.Cursor.Position;
+            Point clientpos = chart.PointToClient(pos);
+            HitTestResult contr = chart.HitTest(clientpos.X, clientpos.Y);
+            if (contr.Series != null && contr.PointIndex != -1)
+                tvItems.SelectedNode = contr.Series.Points[contr.PointIndex].Tag as TreeNode;
         }
 
         private void RefreshItems()
@@ -97,28 +164,32 @@ namespace Costs.Forms
             if (new FormPurchase(selectedPurchase).ShowDialog() != DialogResult.OK)
                 return;
 
-            CostCollection costCollection = CostCollection.GetInstance();
+            CostCollection.GetInstance().Purchases.Sort(Purchase.CompareByDate);
             CostCollection.Save();
             RefreshPurchases();
         }
 
-        private void tmsiPurchaseCopy_Click(object sender, EventArgs e)
+        private void tsmiPurchaseCopy_Click(object sender, EventArgs e)
         {
             Purchase selectedPurchase = GetSelectedPurchase();
             if (selectedPurchase == null)
                 return;
 
-            CostCollection.Add(
-                new Purchase()
-                {
-                    ActualCost = selectedPurchase.ActualCost,
-                    Date = DateTime.Today,
-                    Item = selectedPurchase.Item,
-                    Price = selectedPurchase.Price,
-                    Shop = selectedPurchase.Shop,
-                    Volume = selectedPurchase.Volume
-                }
-            );
+            Purchase newPurchase = new Purchase()
+            {
+                ActualCost = selectedPurchase.ActualCost,
+                Date = DateTime.Today,
+                Item = selectedPurchase.Item,
+                Price = selectedPurchase.Price,
+                Shop = selectedPurchase.Shop,
+                Volume = selectedPurchase.Volume,
+                Comment = selectedPurchase.Comment
+            };
+
+            if (new FormPurchase(newPurchase).ShowDialog() != DialogResult.OK)
+                return;
+
+            CostCollection.Add(newPurchase);
             CostCollection.Save();
             RefreshPurchases();
         }
@@ -128,7 +199,18 @@ namespace Costs.Forms
             if (dgvPurchases.SelectedRows.Count == 0 || dgvPurchases.SelectedRows[0].Index == -1)
                 return null;
 
-            return dgvPurchases.SelectedRows[0].DataBoundItem as Purchase;
+            return GetPurchaseFromRow(dgvPurchases.SelectedRows[0]);
+        }
+
+        private Purchase GetPurchaseFromRow(DataGridViewRow row)
+        {
+            if (row == null)
+                return null;
+
+            if (row.DataBoundItem is Purchase)
+                return row.DataBoundItem as Purchase;
+            else
+                return null;
         }
 
         private void tsmiShopAdd_Click(object sender, EventArgs e)

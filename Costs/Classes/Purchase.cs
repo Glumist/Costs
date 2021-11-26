@@ -96,9 +96,11 @@ namespace Costs.Classes
 
         public static int CompareByDate(Purchase a, Purchase b)
         {
-            if (a.Date == b.Date)
+            if (a.Date != b.Date)
+                return (int)(b.Date - a.Date).TotalDays;
+            if (a.Item != b.Item)
                 return Item.CompareByParent(a.Item, b.Item);
-            return (int)(b.Date - a.Date).TotalDays;
+            return string.Compare(a.Comment, b.Comment);
         }
     }
 
@@ -169,7 +171,7 @@ namespace Costs.Classes
 
             return result;
         }
-        
+
         private static void SetItemsParents(List<Item> items)
         {
             foreach (Item item in items)
@@ -211,7 +213,7 @@ namespace Costs.Classes
             GetInstance().Shops.Add(shop);
             GetInstance().Shops.Sort(Shop.CompareByName);
         }
-        
+
         public static void Add(Item item)
         {
             int lastId = -1;

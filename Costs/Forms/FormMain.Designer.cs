@@ -32,11 +32,13 @@
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle3 = new System.Windows.Forms.DataGridViewCellStyle();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle4 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea1 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
+            System.Windows.Forms.DataVisualization.Charting.Series series1 = new System.Windows.Forms.DataVisualization.Charting.Series();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FormMain));
             this.msCosts = new System.Windows.Forms.MenuStrip();
             this.tsmiPurchaseAdd = new System.Windows.Forms.ToolStripMenuItem();
             this.tsmiPurchaseEdit = new System.Windows.Forms.ToolStripMenuItem();
-            this.tmsiPurchaseCopy = new System.Windows.Forms.ToolStripMenuItem();
+            this.tsmiPurchaseCopy = new System.Windows.Forms.ToolStripMenuItem();
             this.tscbFilter = new System.Windows.Forms.ToolStripComboBox();
             this.dgvPurchases = new System.Windows.Forms.DataGridView();
             this.colCostDate = new System.Windows.Forms.DataGridViewTextBoxColumn();
@@ -46,6 +48,7 @@
             this.colCostActualCost = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.colCostOverCost = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.colCostShop = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.colComment = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.tcMain = new System.Windows.Forms.TabControl();
             this.tpItems = new System.Windows.Forms.TabPage();
             this.tvItems = new System.Windows.Forms.TreeView();
@@ -62,6 +65,7 @@
             this.toolStripStatusLabel1 = new System.Windows.Forms.ToolStripStatusLabel();
             this.tsslSum = new System.Windows.Forms.ToolStripStatusLabel();
             this.scMain = new System.Windows.Forms.SplitContainer();
+            this.chart = new System.Windows.Forms.DataVisualization.Charting.Chart();
             this.msCosts.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dgvPurchases)).BeginInit();
             this.tcMain.SuspendLayout();
@@ -75,25 +79,28 @@
             this.scMain.Panel1.SuspendLayout();
             this.scMain.Panel2.SuspendLayout();
             this.scMain.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.chart)).BeginInit();
             this.SuspendLayout();
             // 
             // msCosts
             // 
+            this.msCosts.ImageScalingSize = new System.Drawing.Size(24, 24);
             this.msCosts.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.tsmiPurchaseAdd,
             this.tsmiPurchaseEdit,
-            this.tmsiPurchaseCopy,
+            this.tsmiPurchaseCopy,
             this.tscbFilter});
             this.msCosts.Location = new System.Drawing.Point(0, 0);
             this.msCosts.Name = "msCosts";
-            this.msCosts.Size = new System.Drawing.Size(760, 27);
+            this.msCosts.Padding = new System.Windows.Forms.Padding(9, 3, 0, 3);
+            this.msCosts.Size = new System.Drawing.Size(1140, 39);
             this.msCosts.TabIndex = 0;
             // 
             // tsmiPurchaseAdd
             // 
             this.tsmiPurchaseAdd.Image = global::Costs.Properties.Resources.IconPlus;
             this.tsmiPurchaseAdd.Name = "tsmiPurchaseAdd";
-            this.tsmiPurchaseAdd.Size = new System.Drawing.Size(87, 23);
+            this.tsmiPurchaseAdd.Size = new System.Drawing.Size(126, 33);
             this.tsmiPurchaseAdd.Text = "Добавить";
             this.tsmiPurchaseAdd.Click += new System.EventHandler(this.tsmiPurchaseAdd_Click);
             // 
@@ -101,17 +108,17 @@
             // 
             this.tsmiPurchaseEdit.Image = global::Costs.Properties.Resources.IconEdit;
             this.tsmiPurchaseEdit.Name = "tsmiPurchaseEdit";
-            this.tsmiPurchaseEdit.Size = new System.Drawing.Size(115, 23);
+            this.tsmiPurchaseEdit.Size = new System.Drawing.Size(169, 33);
             this.tsmiPurchaseEdit.Text = "Редактировать";
             this.tsmiPurchaseEdit.Click += new System.EventHandler(this.tsmiPurchaseEdit_Click);
             // 
-            // tmsiPurchaseCopy
+            // tsmiPurchaseCopy
             // 
-            this.tmsiPurchaseCopy.Image = global::Costs.Properties.Resources.IconCopy;
-            this.tmsiPurchaseCopy.Name = "tmsiPurchaseCopy";
-            this.tmsiPurchaseCopy.Size = new System.Drawing.Size(100, 23);
-            this.tmsiPurchaseCopy.Text = "Копировать";
-            this.tmsiPurchaseCopy.Click += new System.EventHandler(this.tmsiPurchaseCopy_Click);
+            this.tsmiPurchaseCopy.Image = global::Costs.Properties.Resources.IconCopy;
+            this.tsmiPurchaseCopy.Name = "tsmiPurchaseCopy";
+            this.tsmiPurchaseCopy.Size = new System.Drawing.Size(146, 33);
+            this.tsmiPurchaseCopy.Text = "Копировать";
+            this.tsmiPurchaseCopy.Click += new System.EventHandler(this.tsmiPurchaseCopy_Click);
             // 
             // tscbFilter
             // 
@@ -122,7 +129,7 @@
             "За месяц",
             "За год"});
             this.tscbFilter.Name = "tscbFilter";
-            this.tscbFilter.Size = new System.Drawing.Size(121, 23);
+            this.tscbFilter.Size = new System.Drawing.Size(180, 33);
             // 
             // dgvPurchases
             // 
@@ -138,14 +145,16 @@
             this.colCostVolume,
             this.colCostActualCost,
             this.colCostOverCost,
-            this.colCostShop});
+            this.colCostShop,
+            this.colComment});
             this.dgvPurchases.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.dgvPurchases.Location = new System.Drawing.Point(0, 27);
+            this.dgvPurchases.Location = new System.Drawing.Point(0, 39);
+            this.dgvPurchases.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.dgvPurchases.Name = "dgvPurchases";
             this.dgvPurchases.ReadOnly = true;
             this.dgvPurchases.RowHeadersVisible = false;
             this.dgvPurchases.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.dgvPurchases.Size = new System.Drawing.Size(760, 564);
+            this.dgvPurchases.Size = new System.Drawing.Size(1140, 814);
             this.dgvPurchases.TabIndex = 1;
             // 
             // colCostDate
@@ -219,15 +228,23 @@
             this.colCostShop.ReadOnly = true;
             this.colCostShop.Width = 150;
             // 
+            // colComment
+            // 
+            this.colComment.DataPropertyName = "Comment";
+            this.colComment.HeaderText = "Комментарий";
+            this.colComment.Name = "colComment";
+            this.colComment.ReadOnly = true;
+            // 
             // tcMain
             // 
             this.tcMain.Controls.Add(this.tpItems);
             this.tcMain.Controls.Add(this.tpShops);
             this.tcMain.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tcMain.Location = new System.Drawing.Point(0, 0);
+            this.tcMain.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.tcMain.Name = "tcMain";
             this.tcMain.SelectedIndex = 0;
-            this.tcMain.Size = new System.Drawing.Size(258, 613);
+            this.tcMain.Size = new System.Drawing.Size(387, 612);
             this.tcMain.TabIndex = 2;
             this.tcMain.SelectedIndexChanged += new System.EventHandler(this.tcMain_SelectedIndexChanged);
             // 
@@ -235,9 +252,10 @@
             // 
             this.tpItems.Controls.Add(this.tvItems);
             this.tpItems.Controls.Add(this.msTypes);
-            this.tpItems.Location = new System.Drawing.Point(4, 22);
+            this.tpItems.Location = new System.Drawing.Point(4, 29);
+            this.tpItems.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.tpItems.Name = "tpItems";
-            this.tpItems.Size = new System.Drawing.Size(250, 587);
+            this.tpItems.Size = new System.Drawing.Size(379, 579);
             this.tpItems.TabIndex = 2;
             this.tpItems.Text = "Товары";
             this.tpItems.UseVisualStyleBackColor = true;
@@ -246,9 +264,10 @@
             // 
             this.tvItems.AllowDrop = true;
             this.tvItems.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.tvItems.Location = new System.Drawing.Point(0, 24);
+            this.tvItems.Location = new System.Drawing.Point(0, 35);
+            this.tvItems.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.tvItems.Name = "tvItems";
-            this.tvItems.Size = new System.Drawing.Size(250, 563);
+            this.tvItems.Size = new System.Drawing.Size(379, 544);
             this.tvItems.TabIndex = 4;
             this.tvItems.ItemDrag += new System.Windows.Forms.ItemDragEventHandler(this.tvItems_ItemDrag);
             this.tvItems.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.tvItems_AfterSelect);
@@ -257,19 +276,21 @@
             // 
             // msTypes
             // 
+            this.msTypes.ImageScalingSize = new System.Drawing.Size(24, 24);
             this.msTypes.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.tsmiItemAdd,
             this.tsmiItemEdit});
             this.msTypes.Location = new System.Drawing.Point(0, 0);
             this.msTypes.Name = "msTypes";
-            this.msTypes.Size = new System.Drawing.Size(250, 24);
+            this.msTypes.Padding = new System.Windows.Forms.Padding(9, 3, 0, 3);
+            this.msTypes.Size = new System.Drawing.Size(379, 35);
             this.msTypes.TabIndex = 3;
             // 
             // tsmiItemAdd
             // 
             this.tsmiItemAdd.Image = global::Costs.Properties.Resources.IconPlus;
             this.tsmiItemAdd.Name = "tsmiItemAdd";
-            this.tsmiItemAdd.Size = new System.Drawing.Size(87, 20);
+            this.tsmiItemAdd.Size = new System.Drawing.Size(126, 29);
             this.tsmiItemAdd.Text = "Добавить";
             this.tsmiItemAdd.Click += new System.EventHandler(this.tsmiItemAdd_Click);
             // 
@@ -277,7 +298,7 @@
             // 
             this.tsmiItemEdit.Image = global::Costs.Properties.Resources.IconEdit;
             this.tsmiItemEdit.Name = "tsmiItemEdit";
-            this.tsmiItemEdit.Size = new System.Drawing.Size(115, 20);
+            this.tsmiItemEdit.Size = new System.Drawing.Size(169, 29);
             this.tsmiItemEdit.Text = "Редактировать";
             this.tsmiItemEdit.Click += new System.EventHandler(this.tsmiItemEdit_Click);
             // 
@@ -285,10 +306,11 @@
             // 
             this.tpShops.Controls.Add(this.dgvShops);
             this.tpShops.Controls.Add(this.msShops);
-            this.tpShops.Location = new System.Drawing.Point(4, 22);
+            this.tpShops.Location = new System.Drawing.Point(4, 29);
+            this.tpShops.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.tpShops.Name = "tpShops";
-            this.tpShops.Padding = new System.Windows.Forms.Padding(3);
-            this.tpShops.Size = new System.Drawing.Size(250, 587);
+            this.tpShops.Padding = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.tpShops.Size = new System.Drawing.Size(379, 850);
             this.tpShops.TabIndex = 1;
             this.tpShops.Text = "Магазины";
             this.tpShops.UseVisualStyleBackColor = true;
@@ -303,12 +325,13 @@
             this.dgvShops.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.colShopName});
             this.dgvShops.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.dgvShops.Location = new System.Drawing.Point(3, 27);
+            this.dgvShops.Location = new System.Drawing.Point(4, 40);
+            this.dgvShops.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.dgvShops.Name = "dgvShops";
             this.dgvShops.ReadOnly = true;
             this.dgvShops.RowHeadersVisible = false;
             this.dgvShops.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.dgvShops.Size = new System.Drawing.Size(244, 557);
+            this.dgvShops.Size = new System.Drawing.Size(371, 805);
             this.dgvShops.TabIndex = 3;
             this.dgvShops.SelectionChanged += new System.EventHandler(this.dgvShops_SelectionChanged);
             // 
@@ -322,19 +345,21 @@
             // 
             // msShops
             // 
+            this.msShops.ImageScalingSize = new System.Drawing.Size(24, 24);
             this.msShops.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.tsmiShopAdd,
             this.tsmiShopEdit});
-            this.msShops.Location = new System.Drawing.Point(3, 3);
+            this.msShops.Location = new System.Drawing.Point(4, 5);
             this.msShops.Name = "msShops";
-            this.msShops.Size = new System.Drawing.Size(244, 24);
+            this.msShops.Padding = new System.Windows.Forms.Padding(9, 3, 0, 3);
+            this.msShops.Size = new System.Drawing.Size(371, 35);
             this.msShops.TabIndex = 2;
             // 
             // tsmiShopAdd
             // 
             this.tsmiShopAdd.Image = global::Costs.Properties.Resources.IconPlus;
             this.tsmiShopAdd.Name = "tsmiShopAdd";
-            this.tsmiShopAdd.Size = new System.Drawing.Size(87, 20);
+            this.tsmiShopAdd.Size = new System.Drawing.Size(126, 29);
             this.tsmiShopAdd.Text = "Добавить";
             this.tsmiShopAdd.Click += new System.EventHandler(this.tsmiShopAdd_Click);
             // 
@@ -342,60 +367,80 @@
             // 
             this.tsmiShopEdit.Image = global::Costs.Properties.Resources.IconEdit;
             this.tsmiShopEdit.Name = "tsmiShopEdit";
-            this.tsmiShopEdit.Size = new System.Drawing.Size(115, 20);
+            this.tsmiShopEdit.Size = new System.Drawing.Size(169, 29);
             this.tsmiShopEdit.Text = "Редактировать";
             this.tsmiShopEdit.Click += new System.EventHandler(this.tsmiShopEdit_Click);
             // 
             // ssPurchases
             // 
+            this.ssPurchases.ImageScalingSize = new System.Drawing.Size(24, 24);
             this.ssPurchases.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.toolStripStatusLabel1,
             this.tsslSum});
-            this.ssPurchases.Location = new System.Drawing.Point(0, 591);
+            this.ssPurchases.Location = new System.Drawing.Point(0, 853);
             this.ssPurchases.Name = "ssPurchases";
-            this.ssPurchases.Size = new System.Drawing.Size(760, 22);
+            this.ssPurchases.Padding = new System.Windows.Forms.Padding(2, 0, 21, 0);
+            this.ssPurchases.Size = new System.Drawing.Size(1140, 30);
             this.ssPurchases.TabIndex = 2;
             this.ssPurchases.Text = "statusStrip1";
             // 
             // toolStripStatusLabel1
             // 
             this.toolStripStatusLabel1.Name = "toolStripStatusLabel1";
-            this.toolStripStatusLabel1.Size = new System.Drawing.Size(43, 17);
+            this.toolStripStatusLabel1.Size = new System.Drawing.Size(65, 25);
             this.toolStripStatusLabel1.Text = "Итого:";
             // 
             // tsslSum
             // 
             this.tsslSum.Name = "tsslSum";
-            this.tsslSum.Size = new System.Drawing.Size(0, 17);
+            this.tsslSum.Size = new System.Drawing.Size(0, 25);
             // 
             // scMain
             // 
             this.scMain.Dock = System.Windows.Forms.DockStyle.Fill;
             this.scMain.Location = new System.Drawing.Point(0, 0);
+            this.scMain.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.scMain.Name = "scMain";
             // 
             // scMain.Panel1
             // 
             this.scMain.Panel1.Controls.Add(this.tcMain);
+            this.scMain.Panel1.Controls.Add(this.chart);
             // 
             // scMain.Panel2
             // 
             this.scMain.Panel2.Controls.Add(this.dgvPurchases);
             this.scMain.Panel2.Controls.Add(this.msCosts);
             this.scMain.Panel2.Controls.Add(this.ssPurchases);
-            this.scMain.Size = new System.Drawing.Size(1024, 613);
-            this.scMain.SplitterDistance = 258;
-            this.scMain.SplitterWidth = 6;
+            this.scMain.Size = new System.Drawing.Size(1536, 883);
+            this.scMain.SplitterDistance = 387;
+            this.scMain.SplitterWidth = 9;
             this.scMain.TabIndex = 3;
+            // 
+            // chart
+            // 
+            chartArea1.Name = "ChartArea1";
+            this.chart.ChartAreas.Add(chartArea1);
+            this.chart.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.chart.Location = new System.Drawing.Point(0, 612);
+            this.chart.Name = "chart";
+            series1.ChartArea = "ChartArea1";
+            series1.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Pie;
+            series1.Name = "Series1";
+            this.chart.Series.Add(series1);
+            this.chart.Size = new System.Drawing.Size(387, 271);
+            this.chart.TabIndex = 5;
+            this.chart.Text = "chart";
+            this.chart.Click += new System.EventHandler(this.chart_Click);
             // 
             // FormMain
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
-            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1024, 613);
+            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Inherit;
+            this.ClientSize = new System.Drawing.Size(1536, 883);
             this.Controls.Add(this.scMain);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MainMenuStrip = this.msCosts;
+            this.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.Name = "FormMain";
             this.Text = "Затраты";
             this.Load += new System.EventHandler(this.FormMain_Load);
@@ -419,6 +464,7 @@
             this.scMain.Panel2.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.scMain)).EndInit();
             this.scMain.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.chart)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -440,12 +486,13 @@
         private System.Windows.Forms.MenuStrip msTypes;
         private System.Windows.Forms.ToolStripMenuItem tsmiItemAdd;
         private System.Windows.Forms.ToolStripMenuItem tsmiItemEdit;
-        private System.Windows.Forms.ToolStripMenuItem tmsiPurchaseCopy;
+        private System.Windows.Forms.ToolStripMenuItem tsmiPurchaseCopy;
         private System.Windows.Forms.StatusStrip ssPurchases;
         private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel1;
         private System.Windows.Forms.ToolStripStatusLabel tsslSum;
         private System.Windows.Forms.TreeView tvItems;
         private System.Windows.Forms.SplitContainer scMain;
+        private System.Windows.Forms.ToolStripComboBox tscbFilter;
         private System.Windows.Forms.DataGridViewTextBoxColumn colCostDate;
         private System.Windows.Forms.DataGridViewTextBoxColumn colCostName;
         private System.Windows.Forms.DataGridViewTextBoxColumn colCostPrice;
@@ -453,7 +500,8 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn colCostActualCost;
         private System.Windows.Forms.DataGridViewTextBoxColumn colCostOverCost;
         private System.Windows.Forms.DataGridViewTextBoxColumn colCostShop;
-        private System.Windows.Forms.ToolStripComboBox tscbFilter;
+        private System.Windows.Forms.DataGridViewTextBoxColumn colComment;
+        private System.Windows.Forms.DataVisualization.Charting.Chart chart;
     }
 }
 
