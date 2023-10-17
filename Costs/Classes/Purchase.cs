@@ -233,7 +233,16 @@ namespace Costs.Classes
             GetInstance().Purchases.Sort(Purchase.CompareByDate);
         }
 
-        public static bool IsPurchaseOfItemBranch(Item item, Purchase purchase)
+        public static List<Item> GetSubItems(Item item)
+        {
+            List<Item> result = new List<Item>();
+            result.Add(item);
+            foreach (Item subItem in CostCollection.GetInstance().Items.FindAll(i => i.Parent == item))
+                result.AddRange(GetSubItems(subItem));
+            return result;
+        }
+
+        /*public static bool IsPurchaseOfItemBranch(Item item, Purchase purchase)
         {
             if (purchase.Item == item)
                 return true;
@@ -242,6 +251,6 @@ namespace Costs.Classes
                     if (IsPurchaseOfItemBranch(childItem, purchase))
                         return true;
             return false;
-        }
+        }*/
     }
 }

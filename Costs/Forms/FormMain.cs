@@ -31,8 +31,8 @@ namespace Costs.Forms
         {
             CostCollection costCollection = CostCollection.GetInstance();
 
-            RefreshPurchases();
             RefreshItems();
+            RefreshPurchases();
             dgvShops.DataSource = new List<Shop>(costCollection.Shops);
         }
 
@@ -40,10 +40,12 @@ namespace Costs.Forms
         {
             List<Purchase> purchases = new List<Purchase>(CostCollection.GetInstance().Purchases);
 
+
             if (tcMain.SelectedTab == tpItems)
             {
+                List<Item> selectedItems = tvItems.SelectedNode != null ? CostCollection.GetSubItems((Item)tvItems.SelectedNode.Tag) : CostCollection.GetInstance().Items;
                 if (tvItems.SelectedNode != null && tvItems.SelectedNode.Text != ALL)
-                    purchases.RemoveAll(p => !CostCollection.IsPurchaseOfItemBranch((Item)tvItems.SelectedNode.Tag, p));
+                    purchases.RemoveAll(p => !selectedItems.Contains(p.Item));
             }
             else if (tcMain.SelectedTab == tpShops)
             {
@@ -52,16 +54,20 @@ namespace Costs.Forms
                     purchases.RemoveAll(p => p.Shop != shop);
             }
 
+            List<Purchase> filtered = new List<Purchase>();
             switch (tscbFilter.SelectedIndex)
             {
-                case 1: purchases.RemoveAll(p => DateTime.Now > p.Date.AddMonths(1)); break;
-                case 2: purchases.RemoveAll(p => DateTime.Now > p.Date.AddYears(1)); break;
+                case 1: filtered = purchases.FindAll(p => DateTime.Now <= p.Date.AddMonths(1)); break;
+                case 2: filtered = purchases.FindAll(p => DateTime.Now <= p.Date.AddYears(1)); break;
+                default: filtered = new List<Purchase>(purchases); break;
             }
+            if (filtered.Count == 0 && purchases.Count > 0)
+                filtered = new List<Purchase>() { purchases.OrderByDescending(p => p.Date).FirstOrDefault() };
 
-            dgvPurchases.DataSource = purchases;
+            dgvPurchases.DataSource = filtered;
 
             float sum = 0;
-            purchases.ForEach(p => sum += p.ActualCost);
+            filtered.ForEach(p => sum += p.ActualCost);
             tsslSum.Text = "" + sum;
 
             RefreshChart();
@@ -133,7 +139,8 @@ namespace Costs.Forms
 
         private void RefreshItems()
         {
-            tvItems.Nodes.Add(new TreeNode(ALL) { Tag = new Item() { Name = ALL } });
+            TreeNode allNode = new TreeNode(ALL) { Tag = new Item() { Name = ALL } };
+            tvItems.Nodes.Add(allNode);
 
             Dictionary<Item, TreeNode> itemNodes = new Dictionary<Item, TreeNode>();
             foreach (Item item in CostCollection.GetInstance().Items)
@@ -141,7 +148,9 @@ namespace Costs.Forms
             foreach (Item item in CostCollection.GetInstance().Items.FindAll(i => i.Parent != null))
                 itemNodes[item.Parent].Nodes.Add(itemNodes[item]);
             foreach (Item item in CostCollection.GetInstance().Items.FindAll(i => i.Parent == null))
-                tvItems.Nodes.Add(itemNodes[item]);
+                allNode.Nodes.Add(itemNodes[item]);
+
+            allNode.Expand();
         }
 
         private void tsmiPurchaseAdd_Click(object sender, EventArgs e)
@@ -302,7 +311,7 @@ namespace Costs.Forms
             }
             else
             {
-                tvItems.Nodes.Add(nodeToMove);
+                tvItems.Nodes[0].Nodes.Add(nodeToMove);
                 ((Item)nodeToMove.Tag).Parent = null;
                 ((Item)nodeToMove.Tag).ParentId = -1;
             }
